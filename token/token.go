@@ -12,7 +12,7 @@ type Token struct {
 const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
-	// 标识符+字面量
+	// 标识符（变量）
 	IDENT = "IDENT" // add, foobar, x, y, ...
 	INT   = "INT"   // 1343456
 	// 运算符
@@ -28,5 +28,18 @@ const (
 	RBRACE = "}"
 	// 关键字
 	FUNCTION = "FUNCTION"
-	LET      = "LET"
+	VAR      = "VAR"
 )
+
+var keywords = map[string]TokenType{
+	"fn":  FUNCTION,
+	"var": VAR,
+}
+
+// lookupIdent 判断输入的 ident 是否是关键字
+func LookupIdent(ident string) TokenType {
+	if tok, ok := keywords[ident]; ok {
+		return tok
+	}
+	return IDENT
+}
