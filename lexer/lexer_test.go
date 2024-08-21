@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"True/token"
+	"TrueScript/token"
 	"testing"
 )
 

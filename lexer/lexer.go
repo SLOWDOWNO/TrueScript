@@ -1,6 +1,6 @@
 package lexer
 
-import "True/token"
+import "TrueScript/token"
 
 // Lexer 词法分析器
 type Lexer struct {
