@@ -5,8 +5,8 @@ import "TrueScript/token"
 // Lexer 词法分析器
 type Lexer struct {
 	input   string
-	pos     int
-	readPos int // 始终指向当前字符的下一个字符
+	pos     int // 指向当前字符
+	readPos int // 指向当前字符的下一个字符
 	ch      byte
 }
 
@@ -26,6 +26,14 @@ func (l *Lexer) readChar() {
 	}
 	l.pos = l.readPos
 	l.readPos++
+}
+
+// peekChar 返回当前字符的下一个字符，但不移动 readPos
+func (l *Lexer) peekChar() byte {
+	if l.readPos >= len(l.input) {
+		return 0
+	}
+	return l.input[l.readPos]
 }
 
 // NextToken 根据 l.ch 返回对应的语法单元
@@ -48,17 +56,41 @@ func (l *Lexer) NextToken() token.Token {
 			tk = newToken(token.ILLEGAL, l.ch)
 		}
 	case '=':
-		tk = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tk = token.Token{Type: token.EQ, Literal: string(ch) + string(l.ch)}
+		} else {
+			tk = newToken(token.ASSIGN, l.ch)
+		}
+	case '+':
+		tk = newToken(token.PLUS, l.ch)
+	case '-':
+		tk = newToken(token.MINUS, l.ch)
+	case '!':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tk = token.Token{Type: token.NOT_EQ, Literal: string(ch) + string(l.ch)}
+		} else {
+			tk = newToken(token.BANG, l.ch)
+		}
+	case '*':
+		tk = newToken(token.ASTERISK, l.ch)
+	case '/':
+		tk = newToken(token.SLASH, l.ch)
+	case '<':
+		tk = newToken(token.LT, l.ch)
+	case '>':
+		tk = newToken(token.GT, l.ch)
+	case ',':
+		tk = newToken(token.COMMA, l.ch)
 	case ';':
 		tk = newToken(token.SEMICOLON, l.ch)
 	case '(':
 		tk = newToken(token.LPAREN, l.ch)
 	case ')':
 		tk = newToken(token.RPAREN, l.ch)
-	case ',':
-		tk = newToken(token.COMMA, l.ch)
-	case '+':
-		tk = newToken(token.PLUS, l.ch)
 	case '{':
 		tk = newToken(token.LBRACE, l.ch)
 	case '}':
